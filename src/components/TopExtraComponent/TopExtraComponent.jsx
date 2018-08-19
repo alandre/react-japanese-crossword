@@ -23,7 +23,7 @@ class TopExtraComponent extends Component {
         {data.map((groups, key) => (
           <div key={key} className='top-extra__column'>
             {groups.map((group, key2) => (
-              <div key={key2} className='top-extra__column__cell'>
+              <div key={key2} className={'top-extra__column__cell' + (group.completed ? ' top-extra__column__cell--completed' : '')}>
                 {group.value}
               </div>
             ))}

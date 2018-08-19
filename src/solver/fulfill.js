@@ -1,56 +1,9 @@
 /**
- * @typedef {Object} Game
- * @property {Field} field
- * @property {Array<Array<CellGroup>>} left
- * @property {Array<Array<CellGroup>>} top
- */
-
-/**
- * @typedef {Object} CellGroup
- * @property {Boolean} completed
- * @property {Number} value
- */
-
-/**
- * @typedef {Array<Array<Number>>} Field
- */
-
-/**
- * Преобразует строку, приходящую с сервера, в начальное состояние игры
- * @param {String} data приходящая с сервера строка с информациекй об игре
- * @returns {Game} Возаращает начальное состояние игры
- */
-export function parse(data) {
-  const height = +data.split('#')[1].split(',')[0];
-  const width = +data.split('#')[1].split(',')[1];
-
-  const left = data.split('#')[3].split('|').slice(0, -1).map(i => i.split(',').map(i => ({value: +i, completed: false})));
-  const top = data.split('#')[4].split('|').slice(0, -1).map(i => i.split(',').map(i => ({value: +i, completed: false})));
-
-  return {
-    left, top, height, width,
-    field: [...Array(height)]
-      .map(() => [...Array(width)]
-        .map(() => 0)
-      )
-  };
-}
-
-/**
- * Решает японский кроссворд
- * @param {Game} game Текущее состояние игры
- * @returns {undefined}
- */
-export function solve(game) {
-  fulfill(game);
-}
-
-/**
  * Заполняет все строки/столбцы, в которых очевидно единственный вариант расположения
  * @param {Game} game Текущее состояние игры
  * @returns {undefined}
  */
-function fulfill(game) {
+export default function fulfill(game) {
   game.left.forEach((groups, rowIndex) => {
     const {groupsCount, simple, groupSum, startGroupIndex} = getExtraRowInfo(groups);
     if (!simple) {
@@ -102,6 +55,8 @@ function fulfill(game) {
       }
     }
   });
+
+  return game;
 }
 
 /**
@@ -141,13 +96,48 @@ function getExtraRowInfo(row) {
  * @returns {{rowSum: number, startRowIndex: number}} Возвращает сумму незаполненных ячеек и индекс начала пустоты
  */
 function getRowInfo(field, row) {
-  let startIndex = 0, lastCell = field[row][0];
+  let startIndex = 0, lastCell = field[row][0], filledCount = 0, stopCountingSum = false;
   const rowSum = field[row].reduce((result, i, index) => {
-    if (!i && lastCell) {
-      lastCell = i;
-      startIndex = index;
+    if (stopCountingSum) {
+      return result;
     }
-    return result + (!i ? 1 : 0);
+
+    if (i !== lastCell) {
+      switch (i) {
+        case 0:
+        case 1:
+          if (lastCell === -1) {
+            startIndex = index;
+            result = 1;
+          } else {
+            result++;
+          }
+
+          if (i === 1) {
+            filledCount++;
+          }
+          break;
+
+        case -1:
+          if (result !== filledCount) {
+            stopCountingSum = true;
+            return result;
+          }
+          break;
+
+        default:
+          break;
+      }
+
+      lastCell = i;
+      if (i === 1) {
+        filledCount++;
+      }
+      return result + (i !== -1 ? 1 : 0);
+    }
+
+
+    return result + (i === -1 ? 0 : 1);
   }, 0);
 
   return {
@@ -162,13 +152,49 @@ function getRowInfo(field, row) {
  * @returns {{columnSum: number, startColumnIndex: number}} Возвращает сумму незаполненных ячеек и индекс начала пустоты
  */
 function getColumnInfo(field, column) {
-  let startIndex = 0, lastCell = field[0][column];
+  let startIndex = 0, lastCell = field[0][column], filledCount = 0, stopCountingSum = false;
   const columnSum = field.reduce((result, row, index) => {
-    if (!row[column] && lastCell) {
-      lastCell = row[column];
-      startIndex = index;
+    const i = row[column];
+    if (stopCountingSum) {
+      return result;
     }
-    return result + (!row[column] ? 1 : 0);
+
+    if (i !== lastCell) {
+      switch (i) {
+        case 0:
+        case 1:
+          if (lastCell === -1) {
+            startIndex = index;
+            result = 1;
+          } else {
+            result++;
+          }
+
+          if (i === 1) {
+            filledCount++;
+          }
+          break;
+
+        case -1:
+          if (result !== filledCount) {
+            stopCountingSum = true;
+            return result;
+          }
+          break;
+
+        default:
+          break;
+      }
+
+      lastCell = i;
+      if (i === 1) {
+        filledCount++;
+      }
+      return result + (i !== -1 ? 1 : 0);
+    }
+
+
+    return result + (i === -1 ? 0 : 1);
   }, 0);
 
   return {

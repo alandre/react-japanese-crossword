@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
+import cn from 'classnames';
 
 import './FieldComponent.scss';
 
@@ -12,6 +13,20 @@ class FieldComponent extends Component {
     )
   };
 
+  renderCell = (value, key) => {
+    const className = cn('field__row__cell', {
+      'field__row__cell--filled': value === 1,
+      'field__row__cell--empty': value === -1
+    });
+
+    return (
+      <div
+        key={key}
+        className={className}
+      />
+    )
+  };
+
   render() {
     const {data} = this.props;
 
@@ -19,12 +34,7 @@ class FieldComponent extends Component {
       <div className='field'>
         {data.map((row, key) => (
           <div key={key} className='field__row'>
-            {row.map((cell, key2) => (
-              <div
-                key={key2}
-                className={'field__row__cell' + (cell === 1 ? ' field__row__cell--filled' : '')}
-              />
-            ))}
+            {row.map(this.renderCell)}
           </div>
         ))}
       </div>

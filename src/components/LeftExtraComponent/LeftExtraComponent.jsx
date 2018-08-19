@@ -23,7 +23,7 @@ class LeftExtraComponent extends Component {
         {data.map((groups, key) => (
           <div key={key} className='left-extra__row'>
             {groups.map((group, key2) => (
-              <div key={key2} className='left-extra__row__cell'>
+              <div key={key2} className={'left-extra__row__cell' + (group.completed ? ' left-extra__row__cell--completed' : '')}>
                 {group.value}
               </div>
             ))}

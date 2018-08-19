@@ -7,9 +7,10 @@ import FieldComponent from '../FieldComponent/FieldComponent';
 
 class GameComponent extends Component {
   static propTypes = {
+
     field: PropTypes.arrayOf(
       PropTypes.arrayOf(PropTypes.number)
-    ),
+    ).isRequired,
     left: PropTypes.arrayOf(
       PropTypes.arrayOf(
         PropTypes.shape({
@@ -17,7 +18,7 @@ class GameComponent extends Component {
           value: PropTypes.number
         })
       )
-    ),
+    ).isRequired,
     top: PropTypes.arrayOf(
       PropTypes.arrayOf(
         PropTypes.shape({
@@ -25,11 +26,12 @@ class GameComponent extends Component {
           value: PropTypes.number
         })
       )
-    )
+    ).isRequired,
+    onNextStepClick: PropTypes.func
   };
 
   render() {
-    const {field, left, top} = this.props;
+    const {field, left, top, onNextStepClick} = this.props;
 
     return (
       <div className='game'>
@@ -51,6 +53,8 @@ class GameComponent extends Component {
             </tr>
           </tbody>
         </table>
+
+        <button onClick={onNextStepClick}>Next step</button>
       </div>
     );
   }
