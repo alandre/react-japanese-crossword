@@ -1,0 +1,32 @@
+.top-extra {
+  font-size: 14px;
+  background: #fa0;
+  display: inline-block;
+  border: 1px solid black;
+
+  &__column {
+    width: 18px;
+    border-bottom: 1px solid black;
+    vertical-align: bottom;
+    display: inline-block;
+
+    &:last-of-type {
+      border: none;
+    }
+
+    &__cell {
+      display: block;
+      height: 18px;
+      width: 18px;
+      border-right: 1px solid black;
+      text-align: center;
+      padding-top: 1px;
+      cursor: default;
+      border-top: 1px solid black;
+
+      &:hover {
+        background-color: #f8e473;
+      }
+    }
+  }
+}
