@@ -1,5 +1,6 @@
 import fulfill from './fulfill';
 import completeSideGroups from './completeSideGroups';
+import partiallyFill from './partiallyFill';
 
 /**
  * @typedef {Object} Game
@@ -67,6 +68,7 @@ export function* solveStepByStep(game) {
   while (!game.solved) {
     game = yield fulfill(game);
     game = yield completeSideGroups(game);
+    game = yield partiallyFill(game);
   }
 
   return game;
