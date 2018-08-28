@@ -190,7 +190,7 @@ function getColumnInfo(field, column) {
       if (i === 1) {
         filledCount++;
       }
-      return result + (i !== -1 ? 1 : 0);
+      return result;
     }
 
 

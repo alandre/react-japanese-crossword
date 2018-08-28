@@ -1,10 +1,21 @@
 /**
  *
  * @param {Game} game
+ * @param {String} type
  */
-export default function partiallyFill(game) {
-  partiallyFillNormal(game);
-  partiallyFillInverse(game);
+export default function partiallyFill(game, type = 'normal') {
+  switch (type) {
+    case 'normal':
+      partiallyFillNormal(game);
+      break;
+
+    case 'inverse':
+      partiallyFillInverse(game);
+      break;
+
+    default:
+      break;
+  }
 
   return game;
 }
@@ -30,7 +41,14 @@ function partiallyFillInverse(game) {
     );
 
   for (let i = 0; i < game.width; i++) {
-    fillLine(game.height, result[i].slice(), game.top[i], new Array(game.height).fill(0), result, i);
+    fillLine(
+      game.height,
+      result[i].slice(),
+      game.top[i],
+      new Array(game.height).fill(0),
+      result,
+      i
+    );
 
     for (let j = 0; j < game.height; j++) {
       if (result[i][j] !== -2) {
@@ -40,7 +58,16 @@ function partiallyFillInverse(game) {
   }
 }
 
-function fillLine(width, originalLine, blocks, setting, result, fillingLine = 0, currentBlock = 0, startIndex = 0) {
+function fillLine(
+  width,
+  originalLine,
+  blocks,
+  setting,
+  result,
+  fillingLine = 0,
+  currentBlock = 0,
+  startIndex = 0
+) {
   if (blocks.length === currentBlock) {
     markLine(width, setting);
     patchLine(width, originalLine, result, setting, fillingLine);
@@ -54,7 +81,10 @@ function fillLine(width, originalLine, blocks, setting, result, fillingLine = 0,
   const currentBlockLength = blocks[currentBlock].value;
   for (let i = startIndex; i <= setting.length - currentBlockLength; i++)
   {
-    const newSetting = subFill(setting, i, currentBlockLength);
+    const newSetting = subFill(setting, i, currentBlockLength, originalLine);
+    if (!newSetting) {
+      continue;
+    }
     fillLine(width, originalLine, blocks, newSetting, result, fillingLine, currentBlock + 1, i + currentBlockLength + 1);
   }
 }
@@ -80,9 +110,18 @@ function patchLine(width, originalLine, result, setting, patchedLine) {
   }
 }
 
-function subFill(setting, i, currentLength) {
+function subFill(setting, i, currentLength, originalLine) {
   const result = setting.slice();
+  if (originalLine[i - 1] === 1) {
+    return false;
+  }
+  if (originalLine[currentLength + i] === 1) {
+    return false;
+  }
   for (let index = i; index < setting.length && index < currentLength + i; index++) {
+    if (originalLine[index] && originalLine[index] !== 1) {
+      return false;
+    }
     result[index] = 1;
   }
   return result;

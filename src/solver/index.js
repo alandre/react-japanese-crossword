@@ -65,10 +65,15 @@ export function solve(game) {
  * @returns {IterableIterator<*>}
  */
 export function* solveStepByStep(game) {
+  console.log('fulfill');
+  game = yield fulfill(game);
   while (!game.solved) {
-    game = yield fulfill(game);
+    console.log('completeSideGroups');
     game = yield completeSideGroups(game);
-    game = yield partiallyFill(game);
+    console.log('partiallyFill normal');
+    game = yield partiallyFill(game, 'normal');
+    console.log('partiallyFill inverse');
+    game = yield partiallyFill(game, 'inverse');
   }
 
   return game;
